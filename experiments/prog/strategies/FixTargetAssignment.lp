@@ -1,0 +1,1 @@
+assigned(R,S) :- shelf(S,_), robot(R), S==R.

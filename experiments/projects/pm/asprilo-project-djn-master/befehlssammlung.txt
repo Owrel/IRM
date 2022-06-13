@@ -1,0 +1,19 @@
+Befehlssammlung
+
+Instanz mit plan öffnen:
+	viz  -l [Instanz] -p [Plan]
+	
+Solver benutzen um einen plan für eine Instanz zu generieren (einfach "> [output file]" weglassen dann wird der plan nur in der shell angezeigt):
+	clingo ../other/solver.lp [INSTANCE] -q1 --out-atomf=%s. --out-ifs="\n" |grep occurs > [OUTPUT FILE]
+	
+Checker benutzen, um zu sehen ob es bei einem Plan zu einer Instanz probleme gibt:
+	clingo m_checker.lp [Instanz] [Plan] --out-ifs="\n" |grep err
+
+
+Nutzung von run.py:
+	python run.py [Ordnername der Instanz] [zusätzliches Argument]
+		zusätzliche Argumente: 	s: solve only (ungemergeten Plan erstelle und in dem Ordner unter plan.lp abspeichern)
+								b: solve and merge (plan.lp erstellen und dann den erstellten plan mergen und ergebnis in mergeplan.lp abspeichern)
+								v: merge and visualize (wenn plan.lp bereits vorhanden -> mergen und dann visualizer öffnen mit mergeplan und der Instanz)
+								a: solve, merge and visualize 
+								no argument: only merge
