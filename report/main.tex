@@ -15,12 +15,41 @@
 We are talking about plan merging here
 \end{abstract}
 
-\section{Introduction}
 
-\section{Second Section}
-\begin{thebibliography}{8}
-\bibitem{ref_article1}
-Author, F.: Article title. Journal \textbf{2} (5), 99--110 (2016)
+\newpage
+\section{Definition}
+
+\begin{enumerate}
+    \item Input for classical MAPF\cite{classical_mapf}:\@ a tuple \(\langle G,s,t \rangle \) where \(G=(V,E)\) representing a graph, \(s : [1,\ldots,k] \rightarrow V\) maps a ``start'' vertex to an agent. Finally,  \(t : [1,\ldots,k] \rightarrow V\) maps a ``terminal'' vertex to an agent. The output is a set of \(k\) single-agent plan, where a plan \(pi\) is denoted as a sequence of action \(a_1,\ldots,a_n\), each of them being a function defined as \(a : V \rightarrow V\).
+    
+    \item Input for target  assignment:\@ a tuple \(\langle G,s,p \rangle\), \(G=(V,E)\) representing a graph, \(s : [1,\ldots,k] \rightarrow V\) maps a ``start'' vertex to an agent and \(p\) maps \(k\) vertices as ``ending vertices''. The output would be a tuple \(\langle G,s,t \rangle \) where \(G=(V,E)\) representing a graph, \(s : [1,\ldots,k] \rightarrow V\) maps a ``start'' vertex to an agent. Finally,  \(t : [1,\ldots,k] \rightarrow V\) maps a ``terminal'' vertex to an agent.
+    \item Another input for target assignment based on J. Yu and S. M. LaValle paper\cite{anonymous_mapf}:\@ a tuple \(\langle G=(V,E),R,s \rangle\), let \(R\) be a set of robot \(R =\{r_1,\ldots,r_n\}\), $s$ an injective function \(s : R \rightarrow V\). We can then go back on the classic output \(\langle G,s,t \rangle \).
+
+    \item Input for individual path finding would be the output of target  assignment \(\langle G,s,t \rangle \). As output, \(\langle G,s,t, \theta \rangle \); for each robot \( r \), we have \( \theta[r] = \{\pi_1,\ldots,\pi_n\}\), where \(pi\), considering \(r\) as a robot, is a plan satisfying:
+    \begin{enumerate}
+        \item \(\pi[0] = s(r)\)
+        \item let \(a\) a function that we can consider as an action, a movement \(a: V \rightarrow V'\), we have then \(\pi[|\pi|] = t(a_n(\ldots(a_1(s(r)))))\)
+    \end{enumerate}
+
+    \item Plan merging takes as input \(\langle G,s,t, \theta \rangle \) (or maybe just \(\langle G,\theta \rangle \) since we can deduce initial position and terminal position from plans) and gives as output a set of plan \(\pi\) where for each robot \(r\) we have a conflict-free plan \(\pi_r\).
+\end{enumerate}
+
+
+
+\section{Definition in form}
+% Plan merging aim to solve MAPF problems by computing (or not) individual plan for each agent to their goal regardless of conflict, and then, by using these previous plan, merge them into a conflict-free plan.
+% In order to define Plan merging, we can start from the classical MAPF defininition\cite{classical_mapf}; MAPF for \(k\) agents takes as input a tuple \(\langle G,s,t \rangle \) where \(G=(V,E)\) representing a graph, \(s : [1,\ldots,k] \rightarrow V\) maps a ``start'' vertex to an agent. Finally,  \(t : [1,\ldots,k]\) maps a ``terminal'' vertex to an agent. Plan merging can be divided in three section; Target  assignment, Individual Path Computing and Plan Merging. Target  assignment's input can be defined as a tuple \(\langle G,s,p \rangle\), \(G=(V,E)\) representing a graph, \(s : [1,\ldots,k] \rightarrow V\) once again maps a ``start'' vertex to an agent and \(p\) maps \(k\) vertices as ``ending vertices''.
+
+
+
+
+
+\newpage
+\begin{thebibliography}{2}
+\bibitem{classical_mapf}
+Multi-Agent Pathfinding: Definitions, Variants, and Benchmarks. Written by Roni Stern, Nathan R. Sturtevant, Ariel Felner, Sven Koenig, Hang Ma, Thayne T. Walker, Jiaoyang Li, Dor Atzmon, Liron Cohen, T. K. Satish Kumar, Eli Boyarski, Roman Barták
+\bibitem{anonymous_mapf}
+Structure and Intractability of Optimal Multi-Robot Path Planning on Graphs. Written by Jingjin Yu and Steven M. LaValle
 
 \end{thebibliography}
 \end{document}
