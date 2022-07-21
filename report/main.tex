@@ -1,9 +1,22 @@
 \documentclass{article}
+\usepackage{amsthm}
+\usepackage{comment}
+\usepackage{mathbbol}
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[section]
+\usepackage[skip=4pt]{caption}
 \usepackage{graphicx}
 \usepackage{xcolor}
 \usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{float}
 \usepackage[bibstyle=authoryear, style =numeric, citestyle=numeric-comp]{biblatex}
 \bibliography{bibliography/krr,bibliography/procs,bibliography/local}
+
+
+% Begin Variables definition
+\newcommand\widthimg{11cm}
+% End Variables definition
 
 
 \begin{document}
@@ -20,31 +33,300 @@ We are talking about plan merging here
 
 
 \newpage
-\section{Definition}
+% \section{Definition}
 
-Plan merging aim to solve MAPF~\cite{ststfekomawaliatcokubabo19a,erkiozsc13a} problems by computing individual plan for each agent to their goal regardless of conflict, and then, by using these previous plan, merge them into conflict-free plans. The task can be devided in three; target assigment, individual pathfinding and plan-merging.
+% Plan merging aim to solve MAPF~\cite{ststfekomawaliatcokubabo19a,erkiozsc13a} problems by computing individual plan for each agent to their goal regardless of conflict, and then, by using these previous plan, merge them into conflict-free plans. The task can be devided in three; target assigment, individual pathfinding and plan-merging.
 
-\subsection{Classic MAPF}
-We can base plan merging definition on classic MAPF's one; the paper ``Multi-Agent Pathfinding: Definitions, Variants, and Benchmarks''~\cite{ststfekomawaliatcokubabo19a} provides a standart defintion for non-anonymous MAPF with \(k\) agents\@. And it is defined as such; it takes as input a tuple \(\langle G,s,f \rangle \) where \(G=(V,E)\) represent a graph.  \(s : [1,\ldots,k] \rightarrow V\) maps an an agent to a  ``start'' vertex. Finally,  \(f : [1,\ldots,k] \rightarrow V\) maps an agent to a ``final'' vertex. The output is a set of \(k\) single-agent plan, where a plan \(\pi\) is denoted as a sequence of \(n\) action \(a_n,\ldots,a_1\), each of them being a function defined as \(a : V \rightarrow V\), they denote a movement from a vertex to another iff an edge exist between these two or a wating if the two vertices are the same. Formally, \(v \in V, v' \in V, \left\{ \begin{array}{ c l }
-    \exists e(v,v') \in E \\
-    v=v'              
-  \end{array}
-\right.\) \(\Rightarrow  a(v) = v'\). Considering a plan \(\pi\) for an agent \(r\) and a timestep \(t\), \(\pi_r[t] =a_t(a_{t-1}(\ldots a_1(s(r))))\). A plan is considered as valid iff \(\pi_r[|\pi_r-1|] = a_{|\pi_r|-1}(\ldots ( a_1(s(r)))) = f(r)\) where \(|\pi_r|\) gives the length of the plan \(\pi_r\). In order to have a valid solution, taken pairly, plans must be conflict-free;
-\begin{enumerate}
-    \item a vertex conflict between two agents \(r\) and \(r'\) occurs if, at timestep \(t\), \(\pi_r[t]=\pi_{r'}[t]\).
-    \item an edge conflict  (also called swapping conflict) between two agents \(r\) and \(r'\) occurs if, at timestep \(t\), \(\pi_r[t]=\pi_{r'}[t-1]\) and \(\pi_r[t-1]=\pi_{r'}[t]\).
+% \subsection{Classic MAPF}
+% We can base plan merging definition on classic MAPF's one; the paper ``Multi-Agent Pathfinding: Definitions, Variants, and Benchmarks''~\cite{ststfekomawaliatcokubabo19a} provides a standart defintion for non-anonymous MAPF with \(k\) agents\@. And it is defined as such; it takes as input a tuple \(\langle G,s,f \rangle \) where \(G=(V,E)\) represent a graph.  \(s : [1,\ldots,k] \rightarrow V\) maps an an agent to a  ``start'' vertex. Finally,  \(f : [1,\ldots,k] \rightarrow V\) maps an agent to a ``final'' vertex. The output is a set of \(k\) single-agent plan, where a plan \(\pi\) is denoted as a sequence of \(n\) action \(a_n,\ldots,a_1\), each of them being a function defined as \(a : V \rightarrow V\), they denote a movement from a vertex to another iff an edge exist between these two or a wating if the two vertices are the same. Formally, \(v \in V, v' \in V, \left\{ \begin{array}{ c l }
+%     \exists e(v,v') \in E \\
+%     v=v'              
+%   \end{array}
+% \right.\) \(\Rightarrow  a(v) = v'\). Considering a plan \(\pi\) for an agent \(r\) and a timestep \(t\), \(\pi_r[t] =a_t(a_{t-1}(\ldots a_1(s(r))))\). A plan is considered as valid iff \(\pi_r[|\pi_r-1|] = a_{|\pi_r|-1}(\ldots ( a_1(s(r)))) = f(r)\) where \(|\pi_r|\) gives the length of the plan \(\pi_r\). In order to have a valid solution, taken pairly, plans must be conflict-free;
+% \begin{enumerate}
+%     \item a vertex conflict between two agents \(r\) and \(r'\) occurs if, at timestep \(t\), \(\pi_r[t]=\pi_{r'}[t]\).
+%     \item an edge conflict  (also called swapping conflict) between two agents \(r\) and \(r'\) occurs if, at timestep \(t\), \(\pi_r[t]=\pi_{r'}[t-1]\) and \(\pi_r[t-1]=\pi_{r'}[t]\).
 
-\end{enumerate} 
+% \end{enumerate} 
 
 
-\subsection{Target assignment}
-Basing ourselves on MAPF definition, we can then define target assignment (TA); it takes as input a tuple \(\langle G,s,F \rangle\), \(G=(V,E)\) representing a graph, \(s : [1,\ldots,k] \rightarrow V\) maps an agent to a ``start'' and \(F\) a set of \(k\) vertices denoting ``final'' vertices.  The output would be a tuple \(\langle G,s,f \rangle \) where \(G=(V,E)\) representing a graph, \(s : [1,\ldots,k] \rightarrow V\) maps an agent to a ``start'' vertex. Finally,  \(f : [1,\ldots,k] \rightarrow \{V\}\) maps an agent to a set of ``final'' vertices. Having a set of vertices as part of the output allows to describe both anonymous and non-anonymous MAPF problems, TA's output for anonymous variant would be the set of goal vertices \(F\) itself and a singleton for non-anonymous variant.
+% \subsection{Target assignment}
+% Basing ourselves on MAPF definition, we can then define target assignment (TA); it takes as input a tuple \(\langle G,s,F \rangle\), \(G=(V,E)\) representing a graph, \(s : [1,\ldots,k] \rightarrow V\) maps an agent to a ``start'' and \(F\) a set of \(k\) vertices denoting ``final'' vertices.  The output would be a tuple \(\langle G,s,f \rangle \) where \(G=(V,E)\) representing a graph, \(s : [1,\ldots,k] \rightarrow V\) maps an agent to a ``start'' vertex. Finally,  \(f : [1,\ldots,k] \rightarrow \{V\}\) maps an agent to a set of ``final'' vertices. Having a set of vertices as part of the output allows to describe both anonymous and non-anonymous MAPF problems, TA's output for anonymous variant would be the set of goal vertices \(F\) itself and a singleton for non-anonymous variant.
 
-\subsection{Individual Pathfinding}
-We would then define individual pathfinding (IP); the input of would be TA's output \(\langle G,s,f \rangle \). IP would then give as output, \(\langle G, \theta \rangle \) where each agent provides at least one solution. Formally, for each agent \(r\), we have \( \theta[r] = \{\pi_1,\ldots,\pi_n\}\). As a consequence of the TA's definition, let an agent \(r\), \(\forall \pi \in \theta[r], \pi[|\pi|-1]\in f(r)\). 
+% \subsection{Individual Pathfinding}
+% We would then define individual pathfinding (IP); the input of would be TA's output \(\langle G,s,f \rangle \). IP would then give as output, \(\langle G, \theta \rangle \) where each agent provides at least one solution. Formally, for each agent \(r\), we have \( \theta[r] = \{\pi_1,\ldots,\pi_n\}\). As a consequence of the TA's definition, let an agent \(r\), \(\forall \pi \in \theta[r], \pi[|\pi|-1]\in f(r)\). 
 
-\subsection{Plan merging}
-Finally, we can define plan merging (PM). It takes as input \(\langle G, \theta \rangle \) since we can deduce start and final position from plans. And gives as output MAPF's one: a solution being a set of \(k\) conflict-free plans. 
+% \subsection{Plan merging}
+% Finally, we can define plan merging (PM). It takes as input \(\langle G, \theta \rangle \) since we can deduce start and final position from plans. And gives as output MAPF's one: a solution being a set of \(k\) conflict-free plans. 
+
+% http://svancara.net/ 
+% Pavel surynek 
+
+\section{Definining what can be de output of IPF}
+We are working on a grid represented by a graph. Non-anonymous MAPF\@. Makespan, working with  edge conflict and edge conflict only
+
+\subsection{Definition}
+
+\begin{definition}[path]
+  A path is a sequence of nodes where the initial node cannot be the same as the last node in the sequence. For each successive node in the sequence, an edge betwenn the two node must exist.
+\end{definition}
+
+\begin{definition}[Shortest path]
+  Given a initial node and a final node for the sequence, a shortest path of length $n$ exist if no other path of length $n'<n$ exist for the same intial and final node. 
+\end{definition}
+
+\begin{definition}[Conflict window]
+  A conflict window\cite{vebi21a} is a rectangular\footnote{it can actually be any geometrical shape, circle might be interestiong as well} area of the graph that contains all the conflict (path or plan).  
+\end{definition}
+
+\begin{figure}[H]\label{img:conflict_window}
+  \centering
+  \caption{Conflict window}
+  \includegraphics[width=\widthimg]{img/conflict_window.png}
+\end{figure}
+
+
+
+\begin{definition}[Shorter shortest path]
+  A shortest shortest path $SSP$ is a path contained\footnote{means that for every step of the plan, each position is in the rectangle} in a rectangle where the goal and the initial position define its diagonal. Furthermore, this path must use a most 2 different direction. 
+\end{definition}
+
+\begin{definition}[Longer shortest path]
+  A longer shortest path $LSP$ is a path that have a least one node and its sequence that is not contained in the $SPP$ rectangle. 
+\end{definition}
+
+\begin{figure}[H]\label{img:spp_rectangle}
+  \centering
+  \caption{Shorter shortest path rectangle}
+  \includegraphics[width=\widthimg]{img/longer_and_shortest_sp.drawio.png}
+\end{figure}
+  
+
+
+\begin{definition}[Potential conflict or path conflict]\label{def_potential_conflict}
+   Potential conflict or path conflict happened when  a node-conflict exist without considering time step; considering two agents $a$ and $a'$ and their plan $\pi_a$ and $\pi_{a'}$, a potential conflict exist at node $n$ iff $n\in\pi_a$ and $n\in\pi_{a'}$. 
+  
+\end{definition}
+
+\begin{figure}[H]\label{img:potential_conflict}
+  \centering
+  \caption{Potential conflict}
+  \includegraphics[width=\widthimg]{img/potential_conflict.drawio.png}
+\end{figure}
+
+\begin{definition}[Diversity]
+
+\end{definition}
+
+\begin{definition}[Distance (between paths)]
+  
+\end{definition}
+
+\subsection{One path: criteria}
+
+We can first consider the case where IPF gives as output (input of plan merging) only 1 shortest (we can consider also paths that are longer than the shortest path) path in $SP$ for each agent. Thus we can have:
+
+\begin{itemize}
+  \item Random shortest path
+  \item Shortest path that contains \(n\) bending. 
+  \item path that goes through nodes that have (recursively?) the highest degree. (Goes into the middle)
+  \item path that goes through nodes that have the lowest degree. (Goes next to wall)
+  \begin{figure}[H]\label{img:criteria_degree}
+    \centering
+    \caption{Example of paths based on the degree of nodes}
+    \includegraphics[width=\widthimg]{img/criteria_degree.drawio.png}
+  \end{figure}
+  \item Path that contains $n$ bendings.  
+  
+\end{itemize}
+
+Note that for each selection of paths, we can always consider the opposite approach, for instance minimizing instead of maximizing.
+
+
+\subsection{Selection of one path considering other agents}
+This section describe paths that are dependent of other agents paths.
+\begin{itemize}
+  \item path that minimize path conflicts
+  \item path that minimize plan conflicts
+  \item path that minimize conflict window size for path conflict or plan conflict (Building More Compact Models~\cite{yulav16a})
+  \item path that maximize diversity with other agents
+  \item path that maximize distance with other agents
+  \item path that maximize following conflict 
+  \item path that maximize different objectives\cite{rerhhch17a}
+  \item path that contains no path conflict with the highest number of agent
+\end{itemize}
+
+
+\subsection{A set of paths}
+Then we can consider that IPF gives us $n$ paths as output:
+\begin{itemize}
+  \item $k$ random shortest paths. $k$ can be an arbitrary number, a function that gives number of paths to pick\cite{ji22a,brse22a}.
+  \item all shortest paths
+  \item 3 distant paths\cite{ji22a}.
+  \item $k$ random shortest paths + $k$ paths that have a length of $|SP|+2n_{\in \mathbb{N}}$
+  \item $n$ paths that are in $SSP$ and $n'$ paths that are in $LSP$
+\end{itemize}
+
+Overall we can use a combinaison of every single path strategies.
+
+\section{Merging}
+
+\subsection{Systematic approach}
+In order to merge paths to obtain a correct solution, we can use the approach descibed in the paper~\cite{ji22a} as a systematic approach. For each agents and their paths, we create a disjoint graph that is a sub graph based on the paths of the agent. We can now consider two different possibilities; 1. Input paths can create a collision free solution and the output would be the ouput of IPF\@. 2. Their is no conflict free solution. In this case we can extend the graph (nodes or egdes) and give more times for the agents to reach their goals (complete and optimal).
+
+
+
+\subsection{Extending the sub-graphs}
+
+
+\subsubsection{Corridor}
+\begin{itemize}
+  \item Summary: considering a sub-graph based on the path of a agent. The corridor heuristics will extend the sub-graph by adding every neighboor nodes of the sub-graph. Furthermore, the extension can have different levels.
+  \begin{figure}[H]\label{img:corridor}
+    \centering
+    \caption{Example of corridor}
+    \includegraphics[width=\widthimg]{img/corridor.drawio}
+  \end{figure}
+
+  \item Require: Can work with multiple paths, but having distant path would be better since the extension won't overlap. We can also considering selecting paths that have less variety between each agents so the corridor would become sort of a highway. 
+  \item Variant 
+\end{itemize}
+
+\subsubsection{Diamond extention}
+\begin{itemize}
+  \item Summary: From the paths of the agents, for each node where a conflict is identified, we extend the sub graph of the conflicting agents around the node of the conflicting agent
+  \item Require: Can work with on or multiple path, however, adding more path might create too much extension ending up covering the whole graph 
+  \begin{figure}[H]\label{img:diamond}
+    \centering
+    \caption{Example of diamond of size 1 and 2}
+    \includegraphics[width=\widthimg]{img/diamond.drawio.png}
+  \end{figure}
+\end{itemize}
+
+\subsubsection{Plan repair\cite{konopenikobr13a} via neighboor search}
+\begin{itemize}
+  \item Summary: starting from an inital path, the idea would be to extend this inital path by looking into the neighboor solution starting from a conflict point. Maybe other approach are part of neightboor search\cite{lichhadapeko22a}.
+\end{itemize}
+
+\subsubsection{Blocking agents solving}
+
+\begin{definition}[Blocking agent]
+  A agent is called a blocking agent if its goal or its intial position is on the path of anoter agent. It is also considered as fully blocking if both inital and goal position is on the way of a single other agent. Assumption: a full-blocking agent needs to extend his subgraph innn order to find a valid solution.
+
+\end{definition}
+\begin{figure}[H]\label{img:blocking_agent}
+  \centering
+  \caption{Example of blocking agent}
+  \includegraphics[width=\widthimg]{img/blocking.drawio.png}
+\end{figure}
+
+\begin{itemize}
+  \item Summary: consiering the definition above, the idea would be to force blocking agents to reach a conflict free zone and let the non-blocking agents reach their goal first. As shown in~\ref{img:blocking_agent}.
+  \item Require: can work with any type or number of path, however, using $|SP|+2n_{\in \mathbb{N}}$ paths might solve the cconflict by default without having to look for the closest conflict-free zone
+  \item Variant: Conlict-free zone can evolve over time in order to have more flexibility (time interval)
+\end{itemize}
+
+
+
+\subsection{Guiding the agents}
+\subsubsection{Heatmap}
+
+\begin{itemize}
+  \item Summary: The idea is to create for each nodes of the graph, an indicator that would describe how much the node ``used'' b y the agents. We can imagine something like, for each node, we have the number of timestep where an agent is at the node divided by the makespan. The idea would then be to \begin{itemize}
+    \item guide through probability the agents
+    \item guide the graph extension by choosing the nodes that have a lower or higher ``usage''
+  \end{itemize}
+  \item Require: at least one path for each agents, the more paths we have the more precise the heat map can be.
+  \item Variants: \begin{itemize}
+    \item Take into consideration the robustness~\cite{atstfewabazh20a,atstfestko20a}
+    \item make the heatmap evolve over timestep
+  \end{itemize} 
+\end{itemize}
+
+\subsubsection{From the bachelor thesis}
+\begin{itemize}
+  \item Deathlaser: the idea is to keep the agents at a closer position from their goal by pruning their subgraph around their previsous position, probably require only 1 paths
+  \item Homesick: the idea is to force the agent to come back to their plan after $t$ time not being on their origianl plan. Might require a graph extention beforehand 
+  \item Checkpoints (or Divide and Conquer~\cite{yulav16a}): the idea is to add $n$ ``checkpoint'' nodes on the original path where their final paths should contains these nodes. Work only with one path 
+\end{itemize}
+
+
+
+\subsection{Others}
+\subsubsection{Time expanded graphs}
+Need to explore more about this; how it can help solving the problem, what are the kind of path that would be interesting as input, what merging strategies can be applied..
+
+\subsubsection{Highway}
+\begin{itemize}
+  \item Summary: Highway\cite{coko16a,courkuxuayko16a} heuristic aims to change the graph by remove edges resulting with part of the graph that become oriented.
+  \item Require: using following conflict paths might create better highway especially on self generated\cite{courkuxuayko16a} ones.
+  \begin{figure}[H]\label{img:highway}
+    \centering
+    \caption{Example of highway (figure 2 of paper\cite{coko16a})}
+    \includegraphics[width=\widthimg]{img/highways.png}
+  \end{figure}
+\end{itemize}
+
+
+\subsubsection{Pruning by pulling goal}
+\begin{itemize}
+  \item Summary: Considering a agent and its path, each step both the goal and the agent are moving toward each other until a path or plan conflict occurs. Occe a conflict is found, we use the position of the goal and the position of the agent to a rectangle (being the diagonal).
+  \item Require: feels like it could only work for one path at the time, otherwise it might take too much computation time. 
+  \begin{figure}[H]\label{img:pulling_goal}
+    \centering
+    \caption{Example of goal pulling}
+    \includegraphics[width=\widthimg]{img/puling_goal.drawio.png}
+  \end{figure}
+\end{itemize}
+
+\subsubsection{Loop Highway 14-Loyd-Puzzle}
+\begin{itemize}
+  \item Idea: considering a path that goes through every starting position and goal position of every agents, loop, and do not cross; we can meybe assume that if the loop has two free neighboor, their is a solution. If we consider that agent disapear on goal, it is an even better solution. If we can create the loop talked about above we are in a situation in worst case of the 14-Loyd-puzzle that I assume is solvable whatever the configuration.
+\end{itemize}
+
+
+                             
+\subsubsection{Waiting only}
+\begin{itemize}
+  \item Summary: the agents are only allowed to wait, no sub-graph extention is allowed.
+  \item Require: In order to raise the chances of finding a solution, we need a higher number of diverse path, however, som problems can't  be solved through waiting, and some problem could be solved by waiing a huge amount of time. 
+  \item Variant:\begin{itemize}
+    \item Fixing waiting position with time interval \cite{phli11a,naphli12a}
+    
+    
+    \includegraphics[width=5cm]{img/safeinterval.png}
+    \item Fixing waiting position based on conflict free zone
+  \end{itemize}
+\end{itemize}
+
+% \subsection{ OLD What can we do with all of this}
+% Then, plan merging can use different strategies based on its input: (set of) paths.
+% We can use these paths to create different data-structure in order so solve the problem; joint-subgraph, disjoint-subgraph\cite{fewach20a} and these subgraphs can be oriented or not.These are created from the path where the nodes composing these subgraphs are the nodes in the path and the edges of these subgraphs are the used by the agent to move from node to node. We can then, if the following heuristics 
+% \begin{itemize}
+%   \item collision free intereval to define when agents can wait or not
+  
+%   \includegraphics[width=7cm]{img/safeinterval.png}
+%   \item time expanded graph t
+%   \item heatmap by agents based on the set of path
+%   \item global heatmap
+%   \item corridor graph extension based on paths
+%   \item diamond graph extension based on where the conflict are
+%   \item From the merging thesis\begin{itemize}
+%     \item Deathlaser
+%     \item Homesick
+%     \item Checkpoints
+%     \item Crossroad
+%   \end{itemize}
+%   \item Divide-and-Conquer Over the Time Domain\cite{yulav16a}
+%   \item Building More Compact Models\cite{yulav16a}
+%   \item priority solving (blocking agent, longest path priority\ldots)
+% \end{itemize}
+
+% However these heuristics might fail to solve given input, we can consider that if it happen, we can use an optimal algorithm\cite{ji22a,sufestbo16a,barsva19a,yulav16a}. Another solution is to extend the sub-graph (of each agent if disjoint) and the horizon until a solution is found, however, the solution found might not be optimal. 
+  
+
+
+
 
 \printbibliography{}
 \end{document}

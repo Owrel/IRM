@@ -1,10 +1,8 @@
 
-
 from statistics import mean
 from Strategy import Model, Strategy
 import clingo
 import json as JSON
-
 
 
 class Model:
@@ -115,7 +113,7 @@ class GraphTranslation(Strategy):
     def __init__(self, parameters='0') -> None:
         super().__init__(parameters)
         
-        self.strat_path = "prog/strategies/GraphTranslation.lp"
+        self.strat_path = "strategies/GraphTranslation.lp"
         with open(self.strat_path,'r') as f:
             self.encoding = f.read()
 
@@ -140,7 +138,7 @@ class GraphTranslation(Strategy):
 class TA(Strategy):
     def __init__(self, parameters=None) -> None:
         super().__init__(parameters)
-        self.strat_path = 'prog/strategies/RandomTargetAssignment.lp'
+        self.strat_path = 'strategies/RandomTargetAssignment.lp'
         with open(self.strat_path,'r') as f:
             self.encoding = f.read()
     def compute(self):
@@ -165,7 +163,7 @@ class TA(Strategy):
 class IndividualPathFinding(Strategy):
     def __init__(self, parameters=None) -> None:
         super().__init__(parameters)
-        self.strat_path = 'prog/strategies/IndividualPathFinding.lp'
+        self.strat_path = 'strategies/IndividualPathFinding.lp'
         with open(self.strat_path,'r') as f:
             self.encoding = f.read()
         self.ctl_statistics = []
@@ -202,7 +200,7 @@ class IndividualPathFinding(Strategy):
 class FixingWaitOnlyPosition(Strategy):
     def __init__(self, parameters=None) -> None:
         super().__init__(parameters)
-        self.strat_path = 'prog/strategies/FixingWaitOnlyPosition.lp'
+        self.strat_path = 'strategies/FixingWaitOnlyPosition.lp'
         with open(self.strat_path,'r') as f:
             self.encoding = f.read()
         self.ctl_statistics = []
@@ -233,7 +231,7 @@ class FixingWaitOnlyPosition(Strategy):
 class MergingWaitOnly(Strategy):
     def __init__(self, parameters=None) -> None:
         super().__init__(parameters)
-        self.strat_path = 'prog/strategies/MergingWaitOnly.lp'
+        self.strat_path = 'strategies/MergingWaitOnly.lp'
         with open(self.strat_path,'r') as f:
             self.encoding = f.read()
         self.ctl_statistics = []
@@ -261,7 +259,41 @@ class MergingWaitOnly(Strategy):
         # self.ctl_statistics = ctl.statistics
         self.models = models
 
-instance_path ='encodings/instances/AFpriorityWaiting.lp'
+
+
+class k2npath(Strategy):
+    def __init__(self, parameters=None) -> None:
+        super().__init__(parameters)
+        self.strat_path = 'strategies/k2npath.lp'
+        with open(self.strat_path,'r') as f:
+            self.encoding = f.read()
+        self.ctl_statistics = []
+
+    def compute(self):
+        if self.transfered_models is None:
+            raise Exception("Need models first")
+        models = []
+        for model in self.transfered_models:
+            # print(model)
+            mem = Model('')
+            ctl = clingo.Control('5')
+            # print(model.to_prg())
+            ctl.add('base',[],model.to_prg())
+            ctl.load(self.strat_path)
+            ctl.ground([("base", [])])
+            with ctl.solve(yield_=True) as hdl:
+                for m in hdl:
+                    print(m)
+                    mem.merge(Model(m))
+                    mem.merge(model)
+                    models.append(mem)
+                hdl.get()
+            # print(ctl.statistics)
+
+        # self.ctl_statistics = ctl.statistics
+        self.models = models
+
+instance_path ='instances/AFsimple1.lp'
 with open(instance_path,'r') as f:
     encoding = f.read()
 
@@ -282,19 +314,24 @@ ipf = IndividualPathFinding()
 ipf.transfer(ta.get())
 ipf.compute()
 
-print(ipf)
 
-fwo = FixingWaitOnlyPosition()
-fwo.transfer(ipf.get())
-fwo.compute()
 
-print(fwo)
+k2n = k2npath()
+k2n.transfer(ipf.get())
+k2n.compute()
 
-mwo = MergingWaitOnly()
-mwo.transfer(fwo.get())
-mwo.compute()
-print(mwo)
-print(mwo.get())
+print(k2n.get()[-1])
+# fwo = FixingWaitOnlyPosition()
+# fwo.transfer(ipf.get())
+# fwo.compute()
+
+# print(fwo)
+
+# mwo = MergingWaitOnly()
+# mwo.transfer(fwo.get())
+# mwo.compute()
+# print(mwo)
+# print(mwo.get())
 
 
  
